@@ -279,7 +279,8 @@ jobs:
             --service $AWS_ECS_SERVICE_NAME \
             --force-new-deployment \
             --region $AWS_REGION \
-            --deployment-controller '{"type": "ECS"}' \
+            --deployment-controller type=ECS \
             --task-definition "{\"containerDefinitions\": [{\"name\": \"my-demo-app\",\"image\": \"$AWS_ECR_REGISTRY/my-demo-app:$GITHUB_SHA\",\"essential\": true,\"portMappings\": [{\"containerPort\": 3000,\"hostPort\": 3000}]}],\"family\": \"my-demo-app\"}"
+
       
       
