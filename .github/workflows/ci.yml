@@ -248,6 +248,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           skip-logout: false
           registry-type: private
+          region: ${{ env.AWS_REGION }}
 
       - name: Build and push Docker image
         env:
