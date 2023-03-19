@@ -229,4 +229,7 @@ resource "aws_lb_listener" "demo_listener" {
   }
 }
 
-
+variable "image_tag" {
+  description = "The tag of the Docker image to use"
+  type        = string
+}
