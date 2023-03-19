@@ -244,8 +244,8 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
         with:
           registry: 765535404431.dkr.ecr.us-east-1.amazonaws.com/my-demo-app
-          aws-access-key-id: "AKIA3EPLXIGH7NHSL54S"
-          aws-secret-access-key: "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"
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           skip-logout: false
           registry-type: private
           region: ${{ env.AWS_REGION }}
