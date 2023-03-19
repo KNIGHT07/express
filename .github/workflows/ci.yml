@@ -211,6 +211,8 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
 
     steps:
       - uses: actions/checkout@v2
@@ -241,7 +243,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
         with:
-          region: us-east-1
           registry: 765535404431.dkr.ecr.us-east-1.amazonaws.com/my-demo-app
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -259,7 +260,6 @@ jobs:
 
       - name: Deploy to ECS+Fargate
         env:
-          AWS_REGION: us-east-1
           AWS_ACCOUNT_ID: 765535404431
           AWS_ECS_CLUSTER_NAME: demo-cluster
           AWS_ECS_SERVICE_NAME: demo-service
