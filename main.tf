@@ -158,6 +158,7 @@ resource "aws_ecs_service" "demo_service" {
   cluster         = aws_ecs_cluster.demo_cluster.arn
   task_definition = aws_ecs_task_definition.demo_task_definition.arn
   desired_count   = 2
+  launch_type     = "FARGATE"
 
   network_configuration {
     security_groups = [aws_security_group.demo_sg.id]
