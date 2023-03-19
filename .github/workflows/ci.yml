@@ -208,3 +208,64 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry: 765535404431.dkr.ecr.us-east-1.amazonaws.com/my-demo-app
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Build and push Docker image
+        env:
+          ECR_REGISTRY: 765535404431.dkr.ecr.us-east-1.amazonaws.com/my-demo-app
+        run: |
+          docker build -t $ECR_REGISTRY/my-demo-app .
+          docker tag $ECR_REGISTRY/my-demo-app:latest $ECR_REGISTRY/my-demo-app:$GITHUB_SHA
+          docker push $ECR_REGISTRY/my-demo-app:latest
+          docker push $ECR_REGISTRY/my-demo-app:$GITHUB_SHA
+
+      - name: Deploy to ECS+Fargate
+        env:
+          AWS_REGION: us-east-1
+          AWS_ACCOUNT_ID: 765535404431
+          AWS_ECS_CLUSTER_NAME: demo-cluster
+          AWS_ECS_SERVICE_NAME: demo-service
+          AWS_ECR_REGISTRY: 765535404431.dkr.ecr.us-east-1.amazonaws.com/my-demo-app
+        run: |
+          aws ecs update-service \
+            --cluster $AWS_ECS_CLUSTER_NAME \
+            --service $AWS_ECS_SERVICE_NAME \
+            --force-new-deployment \
+            --region $AWS_REGION \
+            --deployment-controller '{"type": "ECS"}' \
+            --task-definition "{\"containerDefinitions\": [{\"name\": \"my-demo-app\",\"image\": \"$AWS_ECR_REGISTRY/my-demo-app:$GITHUB_SHA\",\"essential\": true,\"portMappings\": [{\"containerPort\": 3000,\"hostPort\": 3000}]}],\"family\": \"my-demo-app\"}"
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: '1.1.0'
+
+      - name: Terraform Init
+        run: |
+          cd Express
+          terraform init
+
+      - name: Terraform Plan
+        id: terraform-plan
+        run: |
+          cd Express
+          terraform plan -out=tfplan -var "image_tag=${{ github.sha }}"
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          cd Express
+          terraform apply -auto-approve tfplan
