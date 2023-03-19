@@ -281,7 +281,6 @@ jobs:
             --service $AWS_ECS_SERVICE_NAME \
             --force-new-deployment \
             --region $AWS_REGION \
-            --task-definition "{\"containerDefinitions\": [{\"name\": \"my-demo-app\",\"image\": \"$AWS_ECR_REGISTRY/my-demo-app:$GITHUB_SHA\",\"essential\": true,\"portMappings\": [{\"containerPort\": 3000,\"hostPort\": 3000}]}],\"family\": \"my-demo-app\"}"
-
+            --task-definition "$(sed "s/\$CURRENT_REVISION_NUMBER/$CURRENT_REVISION_NUMBER/g" task-def.json)"
       
       
