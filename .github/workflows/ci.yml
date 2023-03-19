@@ -223,6 +223,8 @@ jobs:
           registry: 765535404431.dkr.ecr.us-east-1.amazonaws.com/my-demo-app
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          skip-logout: false
+          registry-type: private
 
       - name: Build and push Docker image
         env:
