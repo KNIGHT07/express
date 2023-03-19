@@ -213,6 +213,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: us-east-1
+      TERRAFORM_CLI_PATH: /home/runner/work/_temp/e4f4acf8-d18a-44c5-87ce-c75358ff8cc1
 
     steps:
       - uses: actions/checkout@v2
