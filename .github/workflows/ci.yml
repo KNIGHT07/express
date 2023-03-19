@@ -222,19 +222,19 @@ jobs:
 
       - name: Terraform Init
         run: |
-          cd Express
+          cd .
           terraform init
 
       - name: Terraform Plan
         id: terraform-plan
         run: |
-          cd Express
+          cd .
           terraform plan -out=tfplan -var "image_tag=${{ github.sha }}"
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          cd Express
+          cd .
           terraform apply -auto-approve tfplan
       
       - name: Login to AWS ECR
