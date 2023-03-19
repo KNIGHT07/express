@@ -262,10 +262,10 @@ jobs:
         env:
           ECR_REGISTRY: public.ecr.aws/v0e6c2c0/my-demo-app
         run: |
-          docker build -t $ECR_REGISTRY/my-demo-app .
-          docker tag $ECR_REGISTRY/my-demo-app:latest $ECR_REGISTRY/my-demo-app:$GITHUB_SHA
-          docker push $ECR_REGISTRY/my-demo-app:latest
-          docker push $ECR_REGISTRY/my-demo-app:$GITHUB_SHA
+          docker build -t $ECR_REGISTRY .
+          docker tag $ECR_REGISTRY:latest $ECR_REGISTRY:$GITHUB_SHA
+          docker push $ECR_REGISTRY:latest
+          docker push $ECR_REGISTRY:$GITHUB_SHA
 
       - name: Deploy to ECS+Fargate
         env:
