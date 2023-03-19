@@ -215,6 +215,28 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: '1.1.0'
+
+      - name: Terraform Init
+        run: |
+          cd Express
+          terraform init
+
+      - name: Terraform Plan
+        id: terraform-plan
+        run: |
+          cd Express
+          terraform plan -out=tfplan -var "image_tag=${{ github.sha }}"
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          cd Express
+          terraform apply -auto-approve tfplan
+      
       - name: Login to AWS ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -251,24 +273,4 @@ jobs:
             --deployment-controller '{"type": "ECS"}' \
             --task-definition "{\"containerDefinitions\": [{\"name\": \"my-demo-app\",\"image\": \"$AWS_ECR_REGISTRY/my-demo-app:$GITHUB_SHA\",\"essential\": true,\"portMappings\": [{\"containerPort\": 3000,\"hostPort\": 3000}]}],\"family\": \"my-demo-app\"}"
       
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: '1.1.0'
-
-      - name: Terraform Init
-        run: |
-          cd Express
-          terraform init
-
-      - name: Terraform Plan
-        id: terraform-plan
-        run: |
-          cd Express
-          terraform plan -out=tfplan -var "image_tag=${{ github.sha }}"
-
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: |
-          cd Express
-          terraform apply -auto-approve tfplan
+      
