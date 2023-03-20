@@ -276,5 +276,5 @@ jobs:
         run: |
           aws ecs describe-services --cluster $AWS_ECS_CLUSTER_NAME --services $AWS_ECS_SERVICE_NAME --region $AWS_REGION --query 'services[0].taskDefinition' --output text | awk -F/ '{print $NF}' | \
   
-          xargs -I {} sh -c 'sed "s/\$CURRENT_REVISION_NUMBER/{}/g" task-def.json > updated-task-def.json && \
-          aws ecs update-service --cluster $AWS_ECS_CLUSTER_NAME --service $AWS_ECS_SERVICE_NAME --force-new-deployment --region $AWS_REGION --task-definition "$(cat updated-task-def.json)"' sh
+          xargs -I {} sh -c 'sed "s/\$CURRENT_REVISION_NUMBER/{}/g" <(cat task-def.json) > updated-task-def.json && \
+          aws ecs update-service --cluster $AWS_ECS_CLUSTER_NAME --service $AWS_ECS_SERVICE_NAME --force-new-deployment --region $AWS_REGION --task-definition "$(cat updated-task-def.json)"'
